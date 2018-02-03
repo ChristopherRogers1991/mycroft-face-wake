@@ -30,6 +30,11 @@ class SimpleAudioRecorder(object):
         self.thread = None
         self._stop_recording = False
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.terminate()
 
     def start_recording(self, destination):
         """
@@ -80,6 +85,9 @@ class SimpleAudioRecorder(object):
         self.thread.join()
         self.recording = False
         self._stop_recording = False
+
+    def terminate(self):
+        self.audio.terminate()
 
 
 if __name__ == "__main__":
