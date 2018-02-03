@@ -1,6 +1,7 @@
 import cv2
 import time
 from threading import Thread
+import dlib
 
 class ObjectWatcher(Thread):
 
@@ -9,6 +10,7 @@ class ObjectWatcher(Thread):
                  device=0):
         super().__init__(name="object_watcher")
         self._cascade = cv2.CascadeClassifier(haarcascade_path)
+        self._detector = dlib.get_frontal_face_detector()
         self._video_capture = cv2.VideoCapture(device)
         self._call_backs = {"object_entered" : [], "object_left" : []}
         self._terminate = False
@@ -36,12 +38,13 @@ class ObjectWatcher(Thread):
     def object_present(self):
         ret, frame = self._video_capture.read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        objects = self._cascade.detectMultiScale(
-            gray,
-            scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(30, 30)
-        )
+        # objects = self._cascade.detectMultiScale(
+        #     gray,
+        #     scaleFactor=1.1,
+        #     minNeighbors=5,
+        #     minSize=(30, 30)
+        # )
+        objects = self._detector(gray, 0)
         return len(objects) > 0
 
     def _run_callbacks(self, callbacks):
