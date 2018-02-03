@@ -65,7 +65,6 @@ class SimpleAudioRecorder(object):
 
         stream.stop_stream()
         stream.close()
-        self.audio.terminate()
         self._write_wave_file(frames, destination)
 
     def _write_wave_file(self, frames, destination):
