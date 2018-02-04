@@ -5,6 +5,21 @@ from threading import Thread
 class ObjectWatcher(Thread):
 
     def __init__(self, device=0, delay=.2, detector=None):
+        """
+
+        Parameters
+        ----------
+        device : int
+            The video device index, passed directly to cv2.VideoCapture
+        delay : float
+            To reduce false poitives/noise, the object must be present
+            for at lease this many seconds before it will be registered.
+        detector : callable
+            This must take a single frame as it's only argument, and
+            return a true or false value indicating whether the object
+            is present. See `create_haar_cascade_detector` and
+            `create_dlib_frontal_face_detector` for examples.
+        """
         super().__init__(name="object_watcher")
         self._video_capture = cv2.VideoCapture(device)
         self._delay = delay
@@ -15,15 +30,57 @@ class ObjectWatcher(Thread):
         self._time_of_first_face = None
 
     def terminate(self):
+        """
+        Terminate the object detection thread.
+
+        """
         self._terminate = True
 
     def register_object_entered_callback(self, callable, *args, **kwargs):
+        """
+        Callbacks are called in the order in which they were registered.
+
+        Parameters
+        ----------
+        callable : callable
+            This will be called when the object is detected within the frame.
+        args : list
+            Passed to callable.
+        kwargs : dict
+            Passed to callable
+
+        """
         self._call_backs["object_entered"].append((callable, args, kwargs))
 
     def register_object_left_callback(self, callable, *args, **kwargs):
+        """
+        Callbacks are called in the order in which they were registered.
+
+        Parameters
+        ----------
+        callable : callable
+            This will be called when the object leaves the frame.
+        args : list
+            Passed to callable.
+        kwargs : dict
+            Passed to callable
+
+        """
         self._call_backs["object_left"].append((callable, args, kwargs))
 
     def device_is_ready(self, timeout=5):
+        """
+        Currently unused. Likely to be removed.
+
+        Parameters
+        ----------
+        timeout : int
+
+        Returns
+        -------
+        boolean
+
+        """
         if timeout == 0:
             while not self._video_capture.isOpened():
                 time.sleep(1)
@@ -34,7 +91,16 @@ class ObjectWatcher(Thread):
                 time.sleep(1)
         return self._video_capture.isOpened()
 
-    def object_present(self):
+    def _object_present(self):
+        """
+
+        Returns
+        -------
+        boolean
+            True if the object has been within frame for at
+            self._delay seconds.
+
+        """
         ret, frame = self._video_capture.read()
 
         face_found = self._detector(frame)
@@ -57,10 +123,17 @@ class ObjectWatcher(Thread):
             callable(*args, **kwargs)
 
     def run(self):
+        """
+        Overridden from Thread.
+
+        Do not call this directly! Call `.start()` to
+        start the thread.
+
+        """
         while not self._terminate:
-            if self.object_present():
+            if self._object_present():
                 self._run_callbacks("object_entered")
-                while self.object_present() and not self._terminate:
+                while self._object_present() and not self._terminate:
                     pass
                 else:
                     self._run_callbacks("object_left")
@@ -70,6 +143,22 @@ class ObjectWatcher(Thread):
 
 
 def create_haar_cascade_detector(path_to_haarcascade):
+    """
+
+    Parameters
+    ----------
+    path_to_haarcascade : str
+        The path to a haarcascade XML file.
+
+    Returns
+    -------
+    function
+        A function that can be used as a detector. In an
+        ObjectWatcher. It takes in a single frame, and
+        returns a boolean, True if the object represented
+        by the given haarcascade is within the frame.
+
+    """
     cascade = cv2.CascadeClassifier(path_to_haarcascade)
     def detector(frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -85,6 +174,16 @@ def create_haar_cascade_detector(path_to_haarcascade):
 
 
 def create_dlib_frontal_face_detector():
+    """
+
+    Returns
+    -------
+    function
+        A function that can be used as a detector in an
+        ObjectWatcher. Returns true if a face is detected
+        within the frame.
+
+    """
     import dlib
     frontal_face_detector = dlib.get_frontal_face_detector()
     def detector(frame):
