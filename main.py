@@ -1,4 +1,5 @@
 from object_watcher.object_watcher import ObjectWatcher
+from object_watcher.object_watcher import create_dlib_frontal_face_detector
 from simple_audio_recorder.simple_audio_recorder import SimpleAudioRecorder
 from stt.simple_stt import SimpleSTT
 from websocket import create_connection
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     recorder = SimpleAudioRecorder()
 
     with SimpleAudioRecorder() as recorder:
-        fw = ObjectWatcher("./res/haarcascade_frontalface_default.xml", 0)
+        fw = ObjectWatcher(detector=create_dlib_frontal_face_detector())
         fw.register_object_entered_callback(recorder.start_recording, "output.wav")
         fw.register_object_entered_callback(print, "recording!")
 

@@ -1,19 +1,18 @@
 import cv2
 import time
 from threading import Thread
-import dlib
 
 class ObjectWatcher(Thread):
 
-    def __init__(self,
-                 haarcascade_path="haarcascade_frontalface_default.xml",
-                 device=0):
+    def __init__(self, device=0, delay=.2, detector=None):
         super().__init__(name="object_watcher")
-        self._cascade = cv2.CascadeClassifier(haarcascade_path)
-        self._detector = dlib.get_frontal_face_detector()
         self._video_capture = cv2.VideoCapture(device)
+        self._delay = delay
+        self._detector = detector
+
         self._call_backs = {"object_entered" : [], "object_left" : []}
         self._terminate = False
+        self._time_of_first_face = None
 
     def terminate(self):
         self._terminate = True
@@ -37,15 +36,21 @@ class ObjectWatcher(Thread):
 
     def object_present(self):
         ret, frame = self._video_capture.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # objects = self._cascade.detectMultiScale(
-        #     gray,
-        #     scaleFactor=1.1,
-        #     minNeighbors=5,
-        #     minSize=(30, 30)
-        # )
-        objects = self._detector(gray, 0)
-        return len(objects) > 0
+
+        face_found = self._detector(frame)
+
+        if not face_found:
+            self._time_of_first_face = None
+            return False
+
+        now = time.time()
+
+        if not self._time_of_first_face:
+            self._time_of_first_face = now
+            return False
+        if now - self._time_of_first_face > self._delay:
+            return True
+        return False
 
     def _run_callbacks(self, callbacks):
         for callable, args, kwargs in self._call_backs[callbacks]:
@@ -63,8 +68,34 @@ class ObjectWatcher(Thread):
             self._video_capture.release()
             self._terminate = False
 
+
+def create_haar_cascade_detector(path_to_haarcascade):
+    cascade = cv2.CascadeClassifier(path_to_haarcascade)
+    def detector(frame):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        objects = cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30)
+        )
+
+        return len(objects) > 0
+    return detector
+
+
+def create_dlib_frontal_face_detector():
+    import dlib
+    frontal_face_detector = dlib.get_frontal_face_detector()
+    def detector(frame):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        return frontal_face_detector(gray, 0)
+    return detector
+
+
+
 if __name__ == '__main__':
-    fw = ObjectWatcher("../res/haarcascade_frontalface_default.xml", 0)
+    fw = ObjectWatcher(detector=create_dlib_frontal_face_detector())
     fw.register_object_entered_callback(print, "face entered!")
     fw.register_object_left_callback(print, "face left!")
     fw.register_object_left_callback(print)
