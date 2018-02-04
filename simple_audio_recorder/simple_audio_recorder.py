@@ -61,7 +61,8 @@ class SimpleAudioRecorder(object):
         self.thread.start()
 
     def _record_until_stopped(self, destination):
-        stream = self.audio.open(format=self.format, channels=self.channels, rate=self.rate, input=True, frames_per_buffer=self.frames_per_buffer)
+        stream = self.audio.open(format=self.format, channels=self.channels, rate=self.rate, input=True,
+                                 frames_per_buffer=self.frames_per_buffer)
 
         frames = []
         while not self._stop_recording:
@@ -87,6 +88,12 @@ class SimpleAudioRecorder(object):
         self._stop_recording = False
 
     def terminate(self):
+        """
+
+        Wraps `self.audio.terminate`. See PyAudio docs
+        for details.
+
+        """
         self.audio.terminate()
 
 
