@@ -2,3 +2,4 @@ pyaudio
 opencv-python
 SpeechRecognition
 websocket-client
+dlib
