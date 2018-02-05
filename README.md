@@ -3,7 +3,8 @@
 Trigger Mycroft without the use of a wake-word.
 
 ## Simple Demonstration
-https://www.youtube.com/watch?v=H9P5TRo8nQs&feature=youtu.be
+Short demo: https://www.youtube.com/watch?v=H9P5TRo8nQs&feature=youtu.be
+Longer explanation and demo: https://www.youtube.com/watch?v=ytKUTBfjnQI
 
 This is a working prototype. It offers no configuration, must be run on the same host
 as [mycroft-core](https://github.com/MycroftAI/mycroft-core), and all STT is handled
