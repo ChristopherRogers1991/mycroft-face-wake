@@ -4,6 +4,7 @@ Trigger Mycroft without the use of a wake-word.
 
 ## Simple Demonstration
 Short demo: https://www.youtube.com/watch?v=H9P5TRo8nQs&feature=youtu.be
+
 Longer explanation and demo: https://www.youtube.com/watch?v=ytKUTBfjnQI
 
 ## Description and Motivation
