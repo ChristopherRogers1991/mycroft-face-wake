@@ -114,6 +114,8 @@ class ObjectWatcher(Thread):
         """
         ret, frame = self._video_capture.read()
 
+        frame = frame[60:60+120, 80:80+160]
+
         face_found = self._detector(frame)
 
         if not face_found:
