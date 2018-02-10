@@ -18,14 +18,29 @@ I feel that this may offer a more natural way to interact with a voice assistant
 but often when I talk to people, I just make eye-contact and begin talking. This emulates that type of
 interaction (though again, it does not replace the wake-word functionality).
 
-This runs quite nicely on my desktop and laptop, but a Raspberry Pi is not quite powerful enough to handle
+~~This runs quite nicely on my desktop and laptop, but a Raspberry Pi is not quite powerful enough to handle
 it effectively (in my brief test, it took roughly 4 seconds to detect a face on the Pi, where it happens
 virtually instantanesouly on a desktop/laptop). Note that there is also some extra work to get this running
 on a Pi - it will not work as-is. I may add support at a later date, however, given the performance, it
-is not a priority.
+is not a priority.~~
 
-## Usage
+**Update:** This can work on a pi! See below.
+
+## Usage (Tested on Ubuntu 17.10 - see below for Raspbery Pi Support)
 
 1) `git clone https://github.com/ChristopherRogers1991/mycroft-face-wake.git`
 2) `cd mycroft-face-wake && pip install -r requirements.txt && pip install .`
 3) `python main.py`
+
+
+## Raspberry Pi Support
+
+This assumes you are running Raspbian on a Raspberry Pi 3.
+
+1) `sudo apt-get install python-opencv cmake`
+2) `virtualenv -p python2 --system-site-packages ~/.virtualenvs/mycroft-face-wake`
+3) `source ~/.virtualenvs/mycroft-face-wake/bin/activate`
+4) `pip install dlib`
+5) `git clone https://github.com/ChristopherRogers1991/mycroft-face-wake.git`
+6) `cd mycroft-face-wake && pip install -r requirements.txt && pip install .`
+7) `python main.py`

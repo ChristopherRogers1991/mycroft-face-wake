@@ -1,3 +1,4 @@
+from __future__ import print_function
 from object_watcher.object_watcher import ObjectWatcher
 from object_watcher.object_watcher import create_dlib_frontal_face_detector
 from simple_audio_recorder.simple_audio_recorder import SimpleAudioRecorder

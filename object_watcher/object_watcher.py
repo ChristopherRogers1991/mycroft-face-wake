@@ -1,6 +1,14 @@
+from __future__ import print_function
+
 import cv2
 import time
 from threading import Thread
+
+try:
+    from cv2.cv2 import CAP_PROP_FRAME_WIDTH as FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT as FRAME_HEIGHT, CAP_PROP_FPS as FPS
+except ImportError:
+    from cv2.cv import CV_CAP_PROP_FRAME_WIDTH as FRAME_WIDTH, CV_CAP_PROP_FRAME_HEIGHT as FRAME_HEIGHT,\
+        CV_CAP_PROP_FPS as FPS
 
 class ObjectWatcher(Thread):
 
@@ -20,8 +28,11 @@ class ObjectWatcher(Thread):
             is present. See `create_haar_cascade_detector` and
             `create_dlib_frontal_face_detector` for examples.
         """
-        super().__init__(name="object_watcher")
+        super(ObjectWatcher, self).__init__(name="object_watcher")
         self._video_capture = cv2.VideoCapture(device)
+        self._video_capture.set(FRAME_WIDTH, 320)
+        self._video_capture.set(FRAME_HEIGHT, 240)
+        self._video_capture.set(FPS, 5)
         self._delay = delay
         self._detector = detector
 
