@@ -35,6 +35,8 @@ is not a priority.~~
 
 ## Raspberry Pi Support
 
+Demo Video: https://youtu.be/RhQqz_Yy9Fk
+
 This assumes you are running Raspbian on a Raspberry Pi 3.
 
 1) `sudo apt-get install python-opencv cmake`
@@ -44,3 +46,7 @@ This assumes you are running Raspbian on a Raspberry Pi 3.
 5) `git clone https://github.com/ChristopherRogers1991/mycroft-face-wake.git`
 6) `cd mycroft-face-wake && pip install -r requirements.txt && pip install .`
 7) `python main.py`
+
+Note that this is using the python-opencv package from the repos, which only seems to work with
+python2. If you're ambitious, you could probabaly compile it yourself, and get it to work with
+python3.
