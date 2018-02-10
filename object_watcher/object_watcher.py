@@ -28,7 +28,7 @@ class ObjectWatcher(Thread):
             is present. See `create_haar_cascade_detector` and
             `create_dlib_frontal_face_detector` for examples.
         """
-        super().__init__(name="object_watcher")
+        super(ObjectWatcher, self).__init__(name="object_watcher")
         self._video_capture = cv2.VideoCapture(device)
         self._video_capture.set(FRAME_WIDTH, 320)
         self._video_capture.set(FRAME_HEIGHT, 240)
